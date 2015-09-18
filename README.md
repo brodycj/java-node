@@ -57,7 +57,7 @@ External requirements:
 To start Node.js library from Java:
 
 ```Java
-public class JNodeTest {
+public class MyJavaNodeProgram {
   public static void main(String[] args) {
     System.loadLibrary("JNode");
 
@@ -69,8 +69,11 @@ public class JNodeTest {
 and run from command line:
 
 ```Java
-java JNodeTest node -e "console.log('asfd')"
+java MyJavaNodeProgram node -e "console.log('asfd')"
 ```
+
+NOTE: the sample program above needs an extra argument to specify the Node program name.
+This issue is now solved in `JNodeTest.java`.
 
 ### Javascript call to static Java function
 
@@ -209,7 +212,7 @@ javac JNodeTest.java
 Run simple Java-driven startup test:
 
 ```shell
-java JNodeTest node -e "console.log('3 + 4 = ' + (3+4))"
+java JNodeTest -e "console.log('3 + 4 = ' + (3+4))"
 ```
 
 ### Two-way Javascript/Java callback test
@@ -238,7 +241,7 @@ javac JNodeTestCB.java
 To run Java callback test:
 
 ```shell
-java JNodeTest node jnodecbTest.js
+java JNodeTest jnodecbTest.js
 ```
 
 

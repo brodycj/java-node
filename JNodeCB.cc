@@ -2,7 +2,6 @@
 
 #include <jni.h>
 
-// XXX TEMP debugging via stdout:
 #include <iostream>
 
 // Made with *some* help from:
@@ -18,8 +17,8 @@ extern JNIEnv * jnode_jni_env;
 void callMethod(const v8::FunctionCallbackInfo<v8::Value> & fci) {
   v8::Isolate * isolate = fci.GetIsolate();
 
-  // XXX TEMP debugging via stdout:
-  std::cout << "C++ got callMethod() from Javascript" << std::endl;
+  // [TEMP] debugging via stdout:
+  //std::cout << "C++ got callMethod() from Javascript" << std::endl;
 
   if (fci.Length() < 2) {
     std::cerr << "JNodeCB.callMethod() called with missing parameter(s)" << std::endl;
@@ -31,16 +30,12 @@ void callMethod(const v8::FunctionCallbackInfo<v8::Value> & fci) {
     return;
   }
 
-  if (fci.Length() > 2) {
-    std::cerr << "JNodeCB.callMethod() called with extra parameter(s) IGNORED" << std::endl;
-  }
-
   // ref: http://stackoverflow.com/a/10255816/1283667
   v8::String::Utf8Value v1(fci[0]->ToString());
   v8::String::Utf8Value v2(fci[1]->ToString());
 
-  std::cout << "first arg: " << *v1 << std::endl;
-  std::cout << "2nd arg: " << *v2 << std::endl;
+  //std::cout << "first arg: " << *v1 << std::endl;
+  //std::cout << "2nd arg: " << *v2 << std::endl;
 
   // XXX TODO these should be cached somehow [by using a wrapped C++ object]
   JNIEnv * e = jnode_jni_env;
