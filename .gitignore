@@ -1,0 +1,4 @@
+.*.swp
+*.class
+*.jnilib
+node-v4.0.0
