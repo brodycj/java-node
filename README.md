@@ -20,13 +20,13 @@ Highlights:
 Status:
 - Builds on OSX (TODO put in shell script)
 - Java-driven startup working
-- JS --> Java test static function call with no parameters or return working
+- JS --> Java static function call using reflection (with no parameters or return value) working
 
 TODO:
 - Load JNI library in the library class
-- Javascript --> Java static function calls using reflection
 - Javascript --> Java static function calls with parameters and return value
 - Callback Java --> Javascript
+- C++ should cache Java class and method ID somehow (by using a wrapped C++ object) ref: http://www.ibm.com/developerworks/library/j-jni/#notc
 - Support build on Linux
 - automated build
 - Use proper Java package IDs
@@ -44,6 +44,8 @@ External requirements:
 - `node-gyp`
 
 ## Usage
+
+### Start from Java
 
 To start Node.js library from Java:
 
@@ -63,7 +65,31 @@ and run from command line:
 java JNodeTest node -e "console.log('asfd')"
 ```
 
-XXX TODO document JS --> Java calls
+### Javascript call to static Java function
+
+Test Javascript code:
+
+```Javascript
+var JNodeCB = require('./build/Release/JNodeCB.node');
+
+JNodeCB.callVoidMethodWithNoParameters("JNodeTestCB", "callVoidTestMethodWithNoParameters");
+```
+
+Test Java class:
+
+```Java
+public class JNodeTestCB {
+  public static void callVoidTestMethodWithNoParameters() {
+    System.out.println("Java got callVoidTestMethodWithNoParameters()");
+  }
+}
+```
+
+To run from command line:
+
+```shell
+java JNodeTest node jnodecbTest.js
+```
 
 ## Build
 
@@ -124,8 +150,8 @@ Javascript in `jnodecbTest.js`:
 ```Javascript
 var JNodeCB = require('./build/Release/JNodeCB.node');
 
-JNodeCB.callVoidTestMethodWithNoParameters();
-console.log('finished test');
+JNodeCB.callVoidMethodWithNoParameters("JNodeTestCB", "callVoidTestMethodWithNoParameters");
+console.log('END OF TEST');
 ```
 
 Build Java callback test:
