@@ -14,25 +14,31 @@ I may offer this work under other licensing terms in the future.
 Highlights:
 - Java-driven startup
 - Static function callback Javascript --> Java
-- TODO:
-  - Callbacks Java --> Javascript
+- Callback Java --> Javascript
 
 Status:
 - Builds on OSX (TODO put in shell script)
 - Java-driven startup working
 - JS --> Java static function call using reflection working with support for parameters and return value
+- Java --> JS callback now working with no parameters or return value
 
 TODO:
 - Automatic testing
 - C++ should cache Java class and method ID somehow (by using a wrapped C++ object) ref: http://www.ibm.com/developerworks/library/j-jni/#notc
 - Improve JS API to first get wrapped function call object based on Java class and method name
 - Load JNI library in the library class
-- Callback Java --> Javascript
+- String, Array, and simple Object parameters and return value JS --> Java
+- JS --> Java with function return value
+- Callback Java --> Javascript with parameters and return value
 - Support build on Linux
 - automated build
 - Use proper Java package IDs
+- Java API to get function call parameters using a real object instead of a long (64-bit) pointer handle
 
 For future consideration:
+- True object factory on the Java side
+- Non-static function calls JS --> Java
+- Deal with 64-bit numbers (not truly supported by JS)
 - integration with node-java which provides nice support for non-static Javascript --> Java function calls
 - Windows
 - Also target JXCore
@@ -116,6 +122,44 @@ To run from command line:
 java JNodeTest node jnodecbTest.js
 ```
 
+### Callback from Java to Javascript
+
+Javascript:
+
+```Javascript
+var JNodeCB = require('./build/Release/JNodeCB.node');
+
+JNodeCB.callMethod("JNodeTestCB", "testMethodWithCallback", function() {
+  console.log("Got empty callback from Java");
+});
+```
+
+Java:
+
+```Java
+public class JNodeTestCB {
+  public static void testMethodWithCallback(long fciHandle) {
+    System.out.println("Java testMethodWithCallback() called");
+
+    int argCount = JNode.fciArgCount(fciHandle);
+    // NOTE: ignore first two (FUTURE TBD will be fixed)
+    System.out.println("arg count: " + argCount);
+    if (argCount < 3) {
+      System.err.println("ERROR: not enough arguments");
+      return;
+    }
+
+    if (!JNode.fciArgIsFunction(fciHandle, 2)) {
+      System.err.println("ERROR: incorrect argument, function argument expected");
+      return;
+    }
+
+    JNode.fciArgFunctionCallWithNoArguments(fciHandle, 2);
+  }
+}
+
+```
+
 ## Build
 
 Extract Node 4.0.0 source code, configure with `--enable-static`, and build:
@@ -168,7 +212,7 @@ Run simple Java-driven startup test:
 java JNodeTest node -e "console.log('3 + 4 = ' + (3+4))"
 ```
 
-### Java callback test
+### Two-way Javascript/Java callback test
 
 Javascript in `jnodecbTest.js`:
 
@@ -177,6 +221,11 @@ var JNodeCB = require('./build/Release/JNodeCB.node');
 
 var testMethodResult = JNodeCB.callMethod("JNodeTestCB", "testMethod", 3, 4);
 console.log("testMethodResult: " + testMethodResult);
+
+JNodeCB.callMethod("JNodeTestCB", "testMethodWithCallback", function() {
+  console.log("Got empty callback from Java");
+});
+
 console.log('END OF TEST');
 ```
 

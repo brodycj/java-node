@@ -33,10 +33,26 @@ JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
 
 /*
  * Class:     JNode
+ * Method:    fciArgIsFunction
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsFunction
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNode
  * Method:    fciArgNumberValue
  * Signature: (JI)D
  */
 JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNode
+ * Method:    fciArgFunctionCallWithNoArguments
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_JNode_fciArgFunctionCallWithNoArguments
   (JNIEnv *, jclass, jlong, jint);
 
 /*

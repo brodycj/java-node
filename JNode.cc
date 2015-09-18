@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+// Made with *some* help from:
+// - https://nodejs.org/api/addons.html
+
 /* exported for use by JNodeCB addon: */
 // XXX FUTURE TBD find a smarter way to export this:
 JNIEnv * jnode_jni_env;
@@ -70,6 +73,19 @@ JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
 
 /*
  * Class:     JNode
+ * Method:    fciArgIsFunction
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsFunction
+  (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+
+  return fci[argIndex]->IsFunction();
+}
+
+/*
+ * Class:     JNode
  * Method:    fciArgNumberValue
  * Signature: (JI)D
  */
@@ -79,6 +95,22 @@ JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
 
   return fci[argIndex]->NumberValue();
+}
+
+/*
+ * Class:     JNode
+ * Method:    fciArgFunctionCallWithNoArguments
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_JNode_fciArgFunctionCallWithNoArguments
+  (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+
+  v8::Local<v8::Function> f = v8::Local<v8::Function>::Cast(fci[argIndex]);
+  v8::Local<v8::Value> av[0] = {};
+
+  f->Call(v8::Null(fci.GetIsolate()), 0, av);
 }
 
 /*
