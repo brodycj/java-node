@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
-JNIEnv * myenv;
+/* exported for use by JNodeCB addon: */
+// XXX FUTURE TBD find a smarter way to export this:
+JNIEnv * jnode_jni_env;
 
 /*
  * Class:     JNode
@@ -17,7 +19,7 @@ JNIEXPORT void JNICALL Java_JNode_start
   std::string s;
   std::vector<int> v;
 
-  myenv = e;
+  jnode_jni_env = e;
 
   // http://stackoverflow.com/questions/19591873/get-an-array-of-strings-from-java-to-c-jni
   int l = e->GetArrayLength(a);

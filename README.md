@@ -13,17 +13,19 @@ I may offer this work under other licensing terms in the future.
 
 Highlights:
 - Java-driven startup
+- Static function callback Javascript --> Java
 - TODO:
-  - Simple static function calls Javascript --> Java
   - Callbacks Java --> Javascript
 
 Status:
 - Builds on OSX (TODO put in shell script)
 - Java-driven startup working
+- JS --> Java test static function call with no parameters or return working
 
 TODO:
 - Load JNI library in the library class
-- Javascript --> Java function calls
+- Javascript --> Java static function calls using reflection
+- Javascript --> Java static function calls with parameters and return value
 - Callback Java --> Javascript
 - Support build on Linux
 - automated build
@@ -39,6 +41,7 @@ External requirements:
 - Java JDK (tested with Oracle Java JDK 8)
 - Node.js (4.0) source
 - Build tools
+- `node-gyp`
 
 ## Usage
 
@@ -59,6 +62,8 @@ and run from command line:
 ```Java
 java JNodeTest node -e "console.log('asfd')"
 ```
+
+XXX TODO document JS --> Java calls
 
 ## Build
 
@@ -88,19 +93,53 @@ NOTE: _Some_ credit goes to:
 - https://github.com/nodejs/node-v0.x-archive/issues/7310#issuecomment-40280294 for suggestion to use the `-all_load` flag which was needed to get this working on OSX
 - https://github.com/jxcore/jxcore/blob/master/doc/native/Embedding_Basics.md for identification of _which_ v8 libraries to include
 
+Build JNodeCB addon:
+
+```shell
+node-gyp configure build
+```
+
+should generate: `build/Release/JNodeCB.node`
+
 ## Testing
 
-Build Java test program:
+### Java-driven startup test
+
+Build Java-driven startup test program:
 
 ```shell
 javac JNodeTest.java
 ```
 
-Run simple test:
+Run simple Java-driven startup test:
 
 ```shell
 java JNodeTest node -e "console.log('3 + 4 = ' + (3+4))"
 ```
+
+### Java callback test
+
+Javascript in `jnodecbTest.js`:
+
+```Javascript
+var JNodeCB = require('./build/Release/JNodeCB.node');
+
+JNodeCB.callVoidTestMethodWithNoParameters();
+console.log('finished test');
+```
+
+Build Java callback test:
+
+```shell
+javac JNodeTestCB.java
+```
+
+To run Java callback test:
+
+```shell
+java JNodeTest node jnodecbTest.js
+```
+
 
 ## To regenerate JNI header
 
