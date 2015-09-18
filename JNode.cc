@@ -42,3 +42,55 @@ JNIEXPORT void JNICALL Java_JNode_start
   node::Start(argc, (char **)argv);
 }
 
+/*
+ * Class:     JNode
+ * Method:    fciArgCount
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_JNode_fciArgCount
+  (JNIEnv *, jclass, jlong fciHandle)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+
+  return fci.Length();
+}
+
+/*
+ * Class:     JNode
+ * Method:    fciArgIsNumber
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
+  (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+
+  return fci[argIndex]->IsNumber();
+}
+
+/*
+ * Class:     JNode
+ * Method:    fciArgNumberValue
+ * Signature: (JI)D
+ */
+JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
+  (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+
+  return fci[argIndex]->NumberValue();
+}
+
+/*
+ * Class:     JNode
+ * Method:    fciSetReturnNumberValue
+ * Signature: (JD)V
+ */
+JNIEXPORT void JNICALL Java_JNode_fciSetReturnNumberValue
+  (JNIEnv *, jclass, jlong fciHandle, jdouble numberValue)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+
+  v8::Local<v8::Number> n = v8::Number::New(fci.GetIsolate(), numberValue);
+  fci.GetReturnValue().Set(n);
+}

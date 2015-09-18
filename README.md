@@ -20,13 +20,14 @@ Highlights:
 Status:
 - Builds on OSX (TODO put in shell script)
 - Java-driven startup working
-- JS --> Java static function call using reflection (with no parameters or return value) working
+- JS --> Java static function call using reflection working with support for parameters and return value
 
 TODO:
-- Load JNI library in the library class
-- Javascript --> Java static function calls with parameters and return value
-- Callback Java --> Javascript
+- Automatic testing
 - C++ should cache Java class and method ID somehow (by using a wrapped C++ object) ref: http://www.ibm.com/developerworks/library/j-jni/#notc
+- Improve JS API to first get wrapped function call object based on Java class and method name
+- Load JNI library in the library class
+- Callback Java --> Javascript
 - Support build on Linux
 - automated build
 - Use proper Java package IDs
@@ -72,15 +73,39 @@ Test Javascript code:
 ```Javascript
 var JNodeCB = require('./build/Release/JNodeCB.node');
 
-JNodeCB.callVoidMethodWithNoParameters("JNodeTestCB", "callVoidTestMethodWithNoParameters");
+var testMethodResult = JNodeCB.callMethod("JNodeTestCB", "testMethod", 3, 4);
+console.log("testMethodResult: " + testMethodResult);
 ```
+
+XXX NOTE: This is an ugly function call interface, will be improved.
 
 Test Java class:
 
 ```Java
 public class JNodeTestCB {
-  public static void callVoidTestMethodWithNoParameters() {
-    System.out.println("Java got callVoidTestMethodWithNoParameters()");
+  public static void testMethod(long fciHandle) {
+    System.out.println("Java testMethod() called");
+
+    int argCount = JNode.fciArgCount(fciHandle);
+    // NOTE: ignore first two (FUTURE TBD will be fixed)
+    System.out.println("arg count: " + argCount);
+    if (argCount < 4) {
+      System.err.println("ERROR: not enough arguments");
+      return;
+    }
+    if (!JNode.fciArgIsNumber(fciHandle, 2) ||
+        !JNode.fciArgIsNumber(fciHandle, 3)) {
+      System.err.println("ERROR: incorrect arguments, number arguments expected");
+      return;
+    }
+
+    double a = JNode.fciArgNumberValue(fciHandle, 2);
+    System.out.println("number argument a: " + a);
+    double b = JNode.fciArgNumberValue(fciHandle, 3);
+    System.out.println("number argument b: " + b);
+
+    // return the sum:
+    JNode.fciSetReturnNumberValue(fciHandle, a + b);
   }
 }
 ```
@@ -150,7 +175,8 @@ Javascript in `jnodecbTest.js`:
 ```Javascript
 var JNodeCB = require('./build/Release/JNodeCB.node');
 
-JNodeCB.callVoidMethodWithNoParameters("JNodeTestCB", "callVoidTestMethodWithNoParameters");
+var testMethodResult = JNodeCB.callMethod("JNodeTestCB", "testMethod", 3, 4);
+console.log("testMethodResult: " + testMethodResult);
 console.log('END OF TEST');
 ```
 

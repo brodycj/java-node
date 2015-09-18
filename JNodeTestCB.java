@@ -1,5 +1,26 @@
 public class JNodeTestCB {
-  public static void callVoidTestMethodWithNoParameters() {
-    System.out.println("Java got callVoidTestMethodWithNoParameters()");
+  public static void testMethod(long fciHandle) {
+    System.out.println("Java testMethod() called");
+
+    int argCount = JNode.fciArgCount(fciHandle);
+    // NOTE: ignore first two (FUTURE TBD will be fixed)
+    System.out.println("arg count: " + argCount);
+    if (argCount < 4) {
+      System.err.println("ERROR: not enough arguments");
+      return;
+    }
+    if (!JNode.fciArgIsNumber(fciHandle, 2) ||
+        !JNode.fciArgIsNumber(fciHandle, 3)) {
+      System.err.println("ERROR: incorrect arguments, number arguments expected");
+      return;
+    }
+
+    double a = JNode.fciArgNumberValue(fciHandle, 2);
+    System.out.println("number argument a: " + a);
+    double b = JNode.fciArgNumberValue(fciHandle, 3);
+    System.out.println("number argument b: " + b);
+
+    // return the sum:
+    JNode.fciSetReturnNumberValue(fciHandle, a + b);
   }
 }

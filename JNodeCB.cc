@@ -15,24 +15,24 @@
 /* exported by JNode.cc */
 extern JNIEnv * jnode_jni_env;
 
-void callVoidMethodWithNoParameters(const v8::FunctionCallbackInfo<v8::Value> & fci) {
+void callMethod(const v8::FunctionCallbackInfo<v8::Value> & fci) {
   v8::Isolate * isolate = fci.GetIsolate();
 
   // XXX TEMP debugging via stdout:
-  std::cout << "C++ got callVoidMethodWithNoParameters" << std::endl;
+  std::cout << "C++ got callMethod() from Javascript" << std::endl;
 
   if (fci.Length() < 2) {
-    std::cerr << "JNodeCB.callVoidMethodWithNoParameters() called with missing parameter(s)" << std::endl;
+    std::cerr << "JNodeCB.callMethod() called with missing parameter(s)" << std::endl;
     return;
   }
 
   if (!fci[0]->IsString() || !fci[1]->IsString()) {
-    std::cerr << "JNodeCB.callVoidMethodWithNoParameters() called with incorrect parameter(s)" << std::endl;
+    std::cerr << "JNodeCB.callMethod() called with incorrect parameter(s)" << std::endl;
     return;
   }
 
   if (fci.Length() > 2) {
-    std::cerr << "JNodeCB.callVoidMethodWithNoParameters() called with extra parameter(s) IGNORED" << std::endl;
+    std::cerr << "JNodeCB.callMethod() called with extra parameter(s) IGNORED" << std::endl;
   }
 
   // ref: http://stackoverflow.com/a/10255816/1283667
@@ -42,7 +42,7 @@ void callVoidMethodWithNoParameters(const v8::FunctionCallbackInfo<v8::Value> & 
   std::cout << "first arg: " << *v1 << std::endl;
   std::cout << "2nd arg: " << *v2 << std::endl;
 
-  // XXX TODO these should be cached somehow
+  // XXX TODO these should be cached somehow [by using a wrapped C++ object]
   JNIEnv * e = jnode_jni_env;
   jclass c = e->FindClass(*v1);
   if (c == nullptr) {
@@ -50,17 +50,19 @@ void callVoidMethodWithNoParameters(const v8::FunctionCallbackInfo<v8::Value> & 
     return;
   }
 
-  jmethodID m = e->GetStaticMethodID(c, "callVoidTestMethodWithNoParameters", "()V");
+  jmethodID m = e->GetStaticMethodID(c, *v2, "(J)V");
   if (m == 0) {
     std::cerr << "Could not find method: " << *v2 << std::endl;
     return;
   }
 
-  e->CallStaticVoidMethod(c, m);
+  long long fciHandle = (long long)&fci;
+
+  e->CallStaticVoidMethod(c, m, fciHandle);
 }
 
 void initJNodeCB(v8::Local<v8::Object> exports) {
-  NODE_SET_METHOD(exports, "callVoidMethodWithNoParameters", callVoidMethodWithNoParameters);
+  NODE_SET_METHOD(exports, "callMethod", callMethod);
 }
 
 NODE_MODULE(JNodeCB, initJNodeCB)

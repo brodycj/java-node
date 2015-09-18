@@ -1,4 +1,5 @@
 var JNodeCB = require('./build/Release/JNodeCB.node');
 
-JNodeCB.callVoidMethodWithNoParameters("JNodeTestCB", "callVoidTestMethodWithNoParameters");
+var testMethodResult = JNodeCB.callMethod("JNodeTestCB", "testMethod", 3, 4);
+console.log("testMethodResult: " + testMethodResult);
 console.log('END OF TEST');

@@ -15,6 +15,38 @@ extern "C" {
 JNIEXPORT void JNICALL Java_JNode_start
   (JNIEnv *, jclass, jobjectArray);
 
+/*
+ * Class:     JNode
+ * Method:    fciArgCount
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_JNode_fciArgCount
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNode
+ * Method:    fciArgIsNumber
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNode
+ * Method:    fciArgNumberValue
+ * Signature: (JI)D
+ */
+JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNode
+ * Method:    fciSetReturnNumberValue
+ * Signature: (JD)V
+ */
+JNIEXPORT void JNICALL Java_JNode_fciSetReturnNumberValue
+  (JNIEnv *, jclass, jlong, jdouble);
+
 #ifdef __cplusplus
 }
 #endif
