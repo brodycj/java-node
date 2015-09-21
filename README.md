@@ -24,12 +24,12 @@ Status:
 
 TODO:
 - Automatic testing
-- C++ should cache Java class and method ID somehow (by using a wrapped C++ object) ref: http://www.ibm.com/developerworks/library/j-jni/#notc
 - Improve JS API to first get wrapped function call object based on Java class and method name
 - Load JNI library in the library class
 - String, Array, and simple Object parameters and return value JS --> Java
 - JS --> Java with function return value
 - Callback Java --> Javascript with parameters and return value
+- JNI efficiency ref: http://www.ibm.com/developerworks/library/j-jni/
 - Support build on Linux
 - automated build
 - Use proper Java package IDs
@@ -77,7 +77,7 @@ This issue is now solved in `JNodeTest.java`.
 
 ### Javascript call to static Java function
 
-Test Javascript code:
+Test Javascript code - OLD:
 
 ```Javascript
 var JNodeCB = require('./build/Release/JNodeCB.node');
@@ -86,7 +86,18 @@ var testMethodResult = JNodeCB.callMethod("JNodeTestCB", "testMethod", 3, 4);
 console.log("testMethodResult: " + testMethodResult);
 ```
 
-XXX NOTE: This is an ugly function call interface, will be improved.
+Test Javascript code - NEW:
+
+```Javascript
+var JNodeCB = require('./build/Release/JNodeCB.node');
+
+var staticMethodObject = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethod');
+
+var testCallResult = staticMethodObject.call('temp extra', 'args', 3, 4);
+console.log('got test call result: ' + testCallResult);
+```
+
+NOTE: New-style Javascript code needs extra arguments in the function call, will go away.
 
 Test Java class:
 
@@ -126,7 +137,7 @@ java JNodeTest node jnodecbTest.js
 
 ### Callback from Java to Javascript
 
-Javascript:
+Javascript - OLD:
 
 ```Javascript
 var JNodeCB = require('./build/Release/JNodeCB.node');
@@ -135,6 +146,20 @@ JNodeCB.callMethod("JNodeTestCB", "testMethodWithCallback", function() {
   console.log("Got empty callback from Java");
 });
 ```
+
+Javascript - NEW:
+
+```Javascript
+var JNodeCB = require('./build/Release/JNodeCB.node');
+
+var staticMethodObject = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethodWithCallback');
+
+staticMethodObject.call('temp extra', 'args', function() {
+  console.log('Got empty callback from Java');
+});
+```
+
+NOTE: New-style Javascript code needs extra arguments in the function call, will go away.
 
 Java:
 
@@ -219,10 +244,14 @@ Javascript in `jnodecbTest.js`:
 ```Javascript
 var JNodeCB = require('./build/Release/JNodeCB.node');
 
-var testMethodResult = JNodeCB.callMethod('JNodeTestCB', 'testMethod', 3, 4);
-console.log('testMethod result (3+4): ' + testMethodResult);
+var staticMethodObject1 = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethod');
+console.log('Issuing new static method call:');
+var testCallResult = staticMethodObject1.call('temp extra', 'args', 3, 4);
+console.log('got test call result: ' + testCallResult);
 
-JNodeCB.callMethod('JNodeTestCB', 'testMethodWithCallback', function() {
+var staticMethodObject2 = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethodWithCallback');
+console.log('Issuing new static method call with callback Java --> JS:');
+staticMethodObject2.call('temp extra', 'args', function() {
   console.log('Got empty callback from Java');
 });
 
