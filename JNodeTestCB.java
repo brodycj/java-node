@@ -3,21 +3,20 @@ public class JNodeTestCB {
     //System.out.println("Java testMethod() called");
 
     int argCount = JNode.fciArgCount(fciHandle);
-    // NOTE: ignore first two (FUTURE TBD will be fixed)
     //System.out.println("arg count: " + argCount);
-    if (argCount < 4) {
+    if (argCount < 2) {
       System.err.println("ERROR: not enough arguments");
       return;
     }
-    if (!JNode.fciArgIsNumber(fciHandle, 2) ||
-        !JNode.fciArgIsNumber(fciHandle, 3)) {
+    if (!JNode.fciArgIsNumber(fciHandle, 0) ||
+        !JNode.fciArgIsNumber(fciHandle, 1)) {
       System.err.println("ERROR: incorrect arguments, number arguments expected");
       return;
     }
 
-    double a = JNode.fciArgNumberValue(fciHandle, 2);
+    double a = JNode.fciArgNumberValue(fciHandle, 0);
     //System.out.println("number argument a: " + a);
-    double b = JNode.fciArgNumberValue(fciHandle, 3);
+    double b = JNode.fciArgNumberValue(fciHandle, 1);
     //System.out.println("number argument b: " + b);
 
     // return the sum:
@@ -28,18 +27,17 @@ public class JNodeTestCB {
     //System.out.println("Java testMethodWithCallback() called");
 
     int argCount = JNode.fciArgCount(fciHandle);
-    // NOTE: ignore first two (FUTURE TBD will be fixed)
     //System.out.println("arg count: " + argCount);
-    if (argCount < 3) {
+    if (argCount < 1) {
       System.err.println("ERROR: not enough arguments");
       return;
     }
 
-    if (!JNode.fciArgIsFunction(fciHandle, 2)) {
+    if (!JNode.fciArgIsFunction(fciHandle, 0)) {
       System.err.println("ERROR: incorrect argument, function argument expected");
       return;
     }
 
-    JNode.fciArgFunctionCallWithNoArguments(fciHandle, 2);
+    JNode.fciArgFunctionCallWithNoArguments(fciHandle, 0);
   }
 }
