@@ -1,23 +1,13 @@
 var JNodeCB = require('./build/Release/JNodeCB.node');
 
-// Old:
-var testMethodResult = JNodeCB.callMethod('JNodeTestCB', 'testMethod', 3, 4);
-console.log('testMethod result (3+4): ' + testMethodResult);
+var staticTestMethodObject = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethod');
 
-JNodeCB.callMethod('JNodeTestCB', 'testMethodWithCallback', function() {
-  console.log('Got empty callback from Java');
-});
+var testCallResult = staticTestMethodObject.call(3, 4);
+console.log('got static test call result: ' + testCallResult);
 
-// New:
-var staticMethodObject1 = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethod');
-console.log('Issuing new static method call:');
-// XXX TEMP extra arguments needed, will go away:
-var testCallResult = staticMethodObject1.call('temp extra', 'args', 3, 4);
-console.log('got test call result: ' + testCallResult);
+var staticTestMethodObjectWithCallback = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethodWithCallback');
 
-var staticMethodObject2 = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethodWithCallback');
-console.log('Issuing new static method call with callback Java --> JS:');
-staticMethodObject2.call('temp extra', 'args', function() {
+staticTestMethodObjectWithCallback.call(function() {
   console.log('Got empty callback from Java');
 });
 

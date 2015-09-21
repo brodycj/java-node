@@ -55,7 +55,7 @@ JNIEXPORT jint JNICALL Java_JNode_fciArgCount
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
 
-  return fci.Length() - 2;
+  return fci.Length();
 }
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
 
-  return fci[argIndex + 2]->IsNumber();
+  return fci[argIndex]->IsNumber();
 }
 
 /*
@@ -81,7 +81,7 @@ JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsFunction
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
 
-  return fci[argIndex + 2]->IsFunction();
+  return fci[argIndex]->IsFunction();
 }
 
 /*
@@ -94,7 +94,7 @@ JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
 
-  return fci[argIndex + 2]->NumberValue();
+  return fci[argIndex]->NumberValue();
 }
 
 /*
@@ -107,7 +107,7 @@ JNIEXPORT void JNICALL Java_JNode_fciArgFunctionCallWithNoArguments
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
 
-  v8::Local<v8::Function> f = v8::Local<v8::Function>::Cast(fci[argIndex + 2]);
+  v8::Local<v8::Function> f = v8::Local<v8::Function>::Cast(fci[argIndex]);
   v8::Local<v8::Value> av[0] = {};
 
   f->Call(v8::Null(fci.GetIsolate()), 0, av);
