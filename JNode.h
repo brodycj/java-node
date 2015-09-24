@@ -49,6 +49,14 @@ JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
 
 /*
  * Class:     JNode
+ * Method:    fciArgFunctionAsPersistentHandle
+ * Signature: (JI)J
+ */
+JNIEXPORT jlong JNICALL Java_JNode_fciArgFunctionAsPersistentHandle
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNode
  * Method:    fciArgFunctionCallWithNoArguments
  * Signature: (JI)V
  */
@@ -62,6 +70,22 @@ JNIEXPORT void JNICALL Java_JNode_fciArgFunctionCallWithNoArguments
  */
 JNIEXPORT void JNICALL Java_JNode_fciSetReturnNumberValue
   (JNIEnv *, jclass, jlong, jdouble);
+
+/*
+ * Class:     JNode
+ * Method:    functionHandleCallWithNoArguments
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNode_functionHandleCallWithNoArguments
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNode
+ * Method:    functionPersistentHandleDestroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNode_functionPersistentHandleDestroy
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

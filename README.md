@@ -24,7 +24,7 @@ Status:
 
 TODO:
 - Automatic testing
-- Improve JS API to first get wrapped function call object based on Java class and method name
+- ~~Improve JS API to first get wrapped function call object based on Java class and method name~~
 - Load JNI library in the library class
 - String, Array, and simple Object parameters and return value JS --> Java
 - JS --> Java with function return value
@@ -43,6 +43,7 @@ For future consideration:
 - Windows
 - Also target JXCore
 - Support mobile platforms (with help from JXCore)
+- Support throwing exceptions in both directions JS <--> Java
 
 External requirements:
 - Java JDK (tested with Oracle Java JDK 8)
@@ -140,7 +141,7 @@ staticTestMethodObjectWithCallback.call(function() {
 });
 ```
 
-NOTE: New-style Javascript code needs extra arguments in the function call, will go away.
+~~NOTE: New-style Javascript code needs extra arguments in the function call, will go away.~~
 
 Java:
 
@@ -161,7 +162,9 @@ public class JNodeTestCB {
       return;
     }
 
-    JNode.fciArgFunctionCallWithNoArguments(fciHandle, 0);
+    long fph = JNode.fciArgFunctionAsPersistentHandle(fciHandle, 0);
+    JNode.functionHandleCallWithNoArguments(fph);
+    JNode.functionPersistentHandleDestroy(fph);
   }
 }
 ```

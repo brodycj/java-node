@@ -38,6 +38,8 @@ public class JNodeTestCB {
       return;
     }
 
-    JNode.fciArgFunctionCallWithNoArguments(fciHandle, 0);
+    long fph = JNode.fciArgFunctionAsPersistentHandle(fciHandle, 0);
+    JNode.functionHandleCallWithNoArguments(fph);
+    JNode.functionPersistentHandleDestroy(fph);
   }
 }

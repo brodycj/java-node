@@ -11,6 +11,14 @@
 // XXX FUTURE TBD find a smarter way to export this:
 JNIEnv * jnode_jni_env;
 
+struct PersistentFunctionStruct {
+  PersistentFunctionStruct(v8::Isolate * isolate, v8::Handle<v8::Function> & f) :
+    isolate(isolate), f(isolate, f) { }
+
+  v8::Isolate * isolate;
+  v8::Persistent<v8::Function> f;
+};
+
 /*
  * Class:     JNode
  * Method:    start
@@ -99,6 +107,22 @@ JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
 
 /*
  * Class:     JNode
+ * Method:    fciArgFunctionAsPersistentHandle
+ * Signature: (JI)J
+ */
+JNIEXPORT jlong JNICALL Java_JNode_fciArgFunctionAsPersistentHandle
+  (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
+{
+  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
+  v8::Isolate * isolate = fci.GetIsolate();
+
+  v8::Handle<v8::Function> f = v8::Handle<v8::Function>::Cast(fci[argIndex]);
+
+  return reinterpret_cast<long>(new PersistentFunctionStruct(isolate, f));
+}
+
+/*
+ * Class:     JNode
  * Method:    fciArgFunctionCallWithNoArguments
  * Signature: (JI)V
  */
@@ -125,4 +149,42 @@ JNIEXPORT void JNICALL Java_JNode_fciSetReturnNumberValue
 
   v8::Local<v8::Number> n = v8::Number::New(fci.GetIsolate(), numberValue);
   fci.GetReturnValue().Set(n);
+}
+
+/*
+ * Class:     JNode
+ * Method:    functionHandleCallWithNoArguments
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNode_functionHandleCallWithNoArguments
+  (JNIEnv *, jclass, jlong functionPerisstentHandle)
+{
+  PersistentFunctionStruct * pfs = reinterpret_cast<PersistentFunctionStruct *>(
+    reinterpret_cast<void *>(functionPerisstentHandle));
+
+  // NOTE: discovered by reading:
+  // https://groups.google.com/forum/#!topic/v8-users/6kSAbnUb-rQ
+  // Especially the message at:
+  // https://groups.google.com/d/msg/v8-users/6kSAbnUb-rQ/T2BS0O-LuGAJ
+  v8::Local<v8::Function> f = *reinterpret_cast<v8::Local<v8::Function> *>(&pfs->f);
+
+  v8::Local<v8::Value> av[0] = {};
+
+  f->Call(v8::Null(pfs->isolate), 0, av);
+}
+
+/*
+ * Class:     JNode
+ * Method:    functionPersistentHandleDestroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNode_functionPersistentHandleDestroy
+  (JNIEnv *, jclass, jlong functionPerisstentHandle)
+{
+  PersistentFunctionStruct * pfs = reinterpret_cast<PersistentFunctionStruct *>(
+    reinterpret_cast<void *>(functionPerisstentHandle));
+
+  pfs->f.Reset();
+
+  delete pfs;
 }
