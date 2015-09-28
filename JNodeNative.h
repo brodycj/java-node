@@ -81,6 +81,30 @@ JNIEXPORT void JNICALL Java_JNodeNative_functionHandleCallWithNoArguments
 
 /*
  * Class:     JNodeNative
+ * Method:    fcoFromHandle
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_JNodeNative_fcoFromHandle
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoAddIntegerParameter
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fcoAddIntegerParameter
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoVoidCallAndDestroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fcoVoidCallAndDestroy
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNodeNative
  * Method:    functionPersistentHandleDestroy
  * Signature: (J)V
  */

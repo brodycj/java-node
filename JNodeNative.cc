@@ -19,6 +19,28 @@ struct PersistentFunctionStruct {
   v8::Persistent<v8::Function> f;
 };
 
+enum fco_type {
+  FCO_NONE = 0,
+  FCO_INT,
+  FCO_TYPE_COUNT
+};
+
+struct fco_param {
+  fco_param(int value) : type(FCO_INT), intValue(value) { }
+
+  fco_type type;
+  union {
+    int intValue;
+  };
+};
+
+struct FunctionCallObject {
+  FunctionCallObject(PersistentFunctionStruct * pfs) : pfs(pfs) { }
+
+  PersistentFunctionStruct * pfs;
+  std::vector<fco_param> params;
+};
+
 /*
  * Class:     JNodeNative
  * Method:    start
@@ -171,6 +193,67 @@ JNIEXPORT void JNICALL Java_JNodeNative_functionHandleCallWithNoArguments
   v8::Local<v8::Value> av[0] = {};
 
   f->Call(v8::Null(pfs->isolate), 0, av);
+}
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoFromHandle
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_JNodeNative_fcoFromHandle
+  (JNIEnv *, jclass, jlong functionPerisstentHandle)
+{
+  PersistentFunctionStruct * pfs = reinterpret_cast<PersistentFunctionStruct *>(
+    reinterpret_cast<void *>(functionPerisstentHandle));
+
+  return reinterpret_cast<long>(new FunctionCallObject(pfs));
+}
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoAddIntegerParameter
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fcoAddIntegerParameter
+  (JNIEnv *, jclass, jlong fcoHandle, jint value)
+{
+  FunctionCallObject * fco = reinterpret_cast<FunctionCallObject *>(
+    reinterpret_cast<void *>(fcoHandle));
+
+  fco->params.push_back(fco_param(value));
+}
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoVoidCallAndDestroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fcoVoidCallAndDestroy
+  (JNIEnv *, jclass, jlong fcoHandle)
+{
+  FunctionCallObject * fco = reinterpret_cast<FunctionCallObject *>(
+    reinterpret_cast<void *>(fcoHandle));
+  PersistentFunctionStruct * pfs = fco->pfs;
+
+  // NOTE: discovered by reading:
+  // https://groups.google.com/forum/#!topic/v8-users/6kSAbnUb-rQ
+  // Especially the message at:
+  // https://groups.google.com/d/msg/v8-users/6kSAbnUb-rQ/T2BS0O-LuGAJ
+  v8::Local<v8::Function> f = *reinterpret_cast<v8::Local<v8::Function> *>(&pfs->f);
+
+  std::vector<v8::Local<v8::Value>> av;
+  for (std::vector<fco_param>::iterator iter = fco->params.begin();
+       iter != fco->params.end(); ++iter) {
+    switch(iter->type) {
+    case FCO_INT:
+      av.push_back(v8::Number::New(pfs->isolate, iter->intValue));
+    }
+  }
+
+  // trick from: http://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array-c
+  f->Call(v8::Null(pfs->isolate), av.size(), &av[0]);
+
+  delete fco;
 }
 
 /*

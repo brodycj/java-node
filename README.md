@@ -11,6 +11,9 @@ In case of code written under direct guidance from sample code the link is given
 In case I accept contributions from any others I will require CLA with similar statements.
 I may offer this work under other licensing terms in the future.
 
+NOTE: This project is under development and should be considered experimental.
+API is subject to change and some optimizations are expected to be needed.
+
 Highlights:
 - Java-driven startup
 - Static function callback Javascript --> Java
@@ -20,13 +23,13 @@ Status:
 - Builds on OSX (TODO put in shell script)
 - Java-driven startup working
 - JS --> Java static function call using reflection working with support for parameters and return value
-- Java --> JS callback now working with no parameters or return value
+- Java --> JS callback now working with support for parameters but NOT a return value
 
 TODO:
 - Automatic testing
-- String, Array, and simple Object parameters and return value JS --> Java
+- String, Array, and simple Object parameters and return value JS <--> Java
 - JS --> Java with function return value
-- Callback Java --> Javascript with parameters and return value
+- Callback Java --> Javascript return value
 - JNI efficiency ref: http://www.ibm.com/developerworks/library/j-jni/
 - Support build on Linux
 - automated build
@@ -129,8 +132,10 @@ var JNodeCB = require('./build/Release/JNodeCB.node');
 
 var staticTestMethodObjectWithCallback = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethodWithCallback');
 
-staticTestMethodObjectWithCallback.call(function() {
-  console.log('Got empty callback from Java');
+staticTestMethodObjectWithCallback.call(function(a, b) {
+  console.log('Got callback from Java');
+  console.log('a: ' + a);
+  console.log('b: ' + b);
 });
 ```
 
@@ -154,7 +159,10 @@ public class JNodeTestCB {
     }
 
     long fph = JNodeNative.fciArgFunctionAsPersistentHandle(fciHandle, 0);
-    JNodeNative.functionHandleCallWithNoArguments(fph);
+    long fco = JNodeNative.fcoFromHandle(fph);
+    JNodeNative.fcoAddIntegerParameter(fco, 123);
+    JNodeNative.fcoAddIntegerParameter(fco, 456);
+    JNodeNative.fcoVoidCallAndDestroy(fco);
     JNodeNative.functionPersistentHandleDestroy(fph);
   }
 }

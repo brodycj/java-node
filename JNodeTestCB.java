@@ -39,7 +39,10 @@ public class JNodeTestCB {
     }
 
     long fph = JNodeNative.fciArgFunctionAsPersistentHandle(fciHandle, 0);
-    JNodeNative.functionHandleCallWithNoArguments(fph);
+    long fco = JNodeNative.fcoFromHandle(fph);
+    JNodeNative.fcoAddIntegerParameter(fco, 123);
+    JNodeNative.fcoAddIntegerParameter(fco, 456);
+    JNodeNative.fcoVoidCallAndDestroy(fco);
     JNodeNative.functionPersistentHandleDestroy(fph);
   }
 }
