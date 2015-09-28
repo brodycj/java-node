@@ -57,27 +57,11 @@ JNIEXPORT jlong JNICALL Java_JNodeNative_fciArgFunctionAsPersistentHandle
 
 /*
  * Class:     JNodeNative
- * Method:    fciArgFunctionCallWithNoArguments
- * Signature: (JI)V
- */
-JNIEXPORT void JNICALL Java_JNodeNative_fciArgFunctionCallWithNoArguments
-  (JNIEnv *, jclass, jlong, jint);
-
-/*
- * Class:     JNodeNative
  * Method:    fciSetReturnNumberValue
  * Signature: (JD)V
  */
 JNIEXPORT void JNICALL Java_JNodeNative_fciSetReturnNumberValue
   (JNIEnv *, jclass, jlong, jdouble);
-
-/*
- * Class:     JNodeNative
- * Method:    functionHandleCallWithNoArguments
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_JNodeNative_functionHandleCallWithNoArguments
-  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     JNodeNative
@@ -101,6 +85,14 @@ JNIEXPORT void JNICALL Java_JNodeNative_fcoAddIntegerParameter
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_JNodeNative_fcoVoidCallAndDestroy
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoIntCallAndDestroy
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_JNodeNative_fcoIntCallAndDestroy
   (JNIEnv *, jclass, jlong);
 
 /*

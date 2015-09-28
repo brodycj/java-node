@@ -11,6 +11,7 @@ staticTestMethodObjectWithCallback.call(function(a, b) {
   console.log('Got callback from Java');
   console.log('a: ' + a);
   console.log('b: ' + b);
+  return a+b;
 });
 
 console.log('END OF TEST');

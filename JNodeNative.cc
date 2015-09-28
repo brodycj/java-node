@@ -145,22 +145,6 @@ JNIEXPORT jlong JNICALL Java_JNodeNative_fciArgFunctionAsPersistentHandle
 
 /*
  * Class:     JNodeNative
- * Method:    fciArgFunctionCallWithNoArguments
- * Signature: (JI)V
- */
-JNIEXPORT void JNICALL Java_JNodeNative_fciArgFunctionCallWithNoArguments
-  (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
-{
-  v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
-
-  v8::Local<v8::Function> f = v8::Local<v8::Function>::Cast(fci[argIndex]);
-  v8::Local<v8::Value> av[0] = {};
-
-  f->Call(v8::Null(fci.GetIsolate()), 0, av);
-}
-
-/*
- * Class:     JNodeNative
  * Method:    fciSetReturnNumberValue
  * Signature: (JD)V
  */
@@ -171,28 +155,6 @@ JNIEXPORT void JNICALL Java_JNodeNative_fciSetReturnNumberValue
 
   v8::Local<v8::Number> n = v8::Number::New(fci.GetIsolate(), numberValue);
   fci.GetReturnValue().Set(n);
-}
-
-/*
- * Class:     JNodeNative
- * Method:    functionHandleCallWithNoArguments
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_JNodeNative_functionHandleCallWithNoArguments
-  (JNIEnv *, jclass, jlong functionPerisstentHandle)
-{
-  PersistentFunctionStruct * pfs = reinterpret_cast<PersistentFunctionStruct *>(
-    reinterpret_cast<void *>(functionPerisstentHandle));
-
-  // NOTE: discovered by reading:
-  // https://groups.google.com/forum/#!topic/v8-users/6kSAbnUb-rQ
-  // Especially the message at:
-  // https://groups.google.com/d/msg/v8-users/6kSAbnUb-rQ/T2BS0O-LuGAJ
-  v8::Local<v8::Function> f = *reinterpret_cast<v8::Local<v8::Function> *>(&pfs->f);
-
-  v8::Local<v8::Value> av[0] = {};
-
-  f->Call(v8::Null(pfs->isolate), 0, av);
 }
 
 /*
@@ -254,6 +216,42 @@ JNIEXPORT void JNICALL Java_JNodeNative_fcoVoidCallAndDestroy
   f->Call(v8::Null(pfs->isolate), av.size(), &av[0]);
 
   delete fco;
+}
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoIntCallAndDestroy
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_JNodeNative_fcoIntCallAndDestroy
+  (JNIEnv *, jclass, jlong fcoHandle)
+{
+  FunctionCallObject * fco = reinterpret_cast<FunctionCallObject *>(
+    reinterpret_cast<void *>(fcoHandle));
+  PersistentFunctionStruct * pfs = fco->pfs;
+
+  // NOTE: discovered by reading:
+  // https://groups.google.com/forum/#!topic/v8-users/6kSAbnUb-rQ
+  // Especially the message at:
+  // https://groups.google.com/d/msg/v8-users/6kSAbnUb-rQ/T2BS0O-LuGAJ
+  v8::Local<v8::Function> f = *reinterpret_cast<v8::Local<v8::Function> *>(&pfs->f);
+
+  std::vector<v8::Local<v8::Value>> av;
+  for (std::vector<fco_param>::iterator iter = fco->params.begin();
+       iter != fco->params.end(); ++iter) {
+    switch(iter->type) {
+    case FCO_INT:
+      av.push_back(v8::Number::New(pfs->isolate, iter->intValue));
+    }
+  }
+
+  // trick from: http://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array-c
+  v8::Handle<v8::Value> rv = f->Call(v8::Null(pfs->isolate), av.size(), &av[0]);
+
+  delete fco;
+
+  // ref: http://stackoverflow.com/a/11387695/1283667
+  return rv->IsInt32() ? rv->ToInt32()->Value() : 0;
 }
 
 /*

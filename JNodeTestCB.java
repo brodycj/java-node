@@ -42,7 +42,8 @@ public class JNodeTestCB {
     long fco = JNodeNative.fcoFromHandle(fph);
     JNodeNative.fcoAddIntegerParameter(fco, 123);
     JNodeNative.fcoAddIntegerParameter(fco, 456);
-    JNodeNative.fcoVoidCallAndDestroy(fco);
+    int r = JNodeNative.fcoIntCallAndDestroy(fco);
     JNodeNative.functionPersistentHandleDestroy(fph);
+    System.out.println("Got result back from JS callback: " + r);
   }
 }

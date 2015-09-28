@@ -12,7 +12,7 @@ In case I accept contributions from any others I will require CLA with similar s
 I may offer this work under other licensing terms in the future.
 
 NOTE: This project is under development and should be considered experimental.
-API is subject to change and some optimizations are expected to be needed.
+API is subject to change and some optimizations are expected to be required.
 
 Highlights:
 - Java-driven startup
@@ -22,14 +22,13 @@ Highlights:
 Status:
 - Builds on OSX (TODO put in shell script)
 - Java-driven startup working
-- JS --> Java static function call using reflection working with support for parameters and return value
-- Java --> JS callback now working with support for parameters but NOT a return value
+- JS --> Java static function call using reflection working with support for _integer_ parameters and return value
+- Java --> JS callback now working with support for _integer_ parameters and return value
 
 TODO:
 - Automatic testing
-- String, Array, and simple Object parameters and return value JS <--> Java
+- String, array, "double-precision" (32-bit floating point), and simple Object parameters and return value JS <--> Java
 - JS --> Java with function return value
-- Callback Java --> Javascript return value
 - JNI efficiency ref: http://www.ibm.com/developerworks/library/j-jni/
 - Support build on Linux
 - automated build
@@ -136,6 +135,7 @@ staticTestMethodObjectWithCallback.call(function(a, b) {
   console.log('Got callback from Java');
   console.log('a: ' + a);
   console.log('b: ' + b);
+  return a+b;
 });
 ```
 
@@ -162,8 +162,9 @@ public class JNodeTestCB {
     long fco = JNodeNative.fcoFromHandle(fph);
     JNodeNative.fcoAddIntegerParameter(fco, 123);
     JNodeNative.fcoAddIntegerParameter(fco, 456);
-    JNodeNative.fcoVoidCallAndDestroy(fco);
+    int r = JNodeNative.fcoIntCallAndDestroy(fco);
     JNodeNative.functionPersistentHandleDestroy(fph);
+    System.out.println("Got result back from JS callback: " + r);
   }
 }
 ```
@@ -240,8 +241,11 @@ console.log('got static test call result: ' + testCallResult);
 
 var staticTestMethodObjectWithCallback = JNodeCB.getStaticMethodObject('JNodeTestCB', 'testMethodWithCallback');
 
-staticTestMethodObjectWithCallback.call(function() {
-  console.log('Got empty callback from Java');
+staticTestMethodObjectWithCallback.call(function(a, b) {
+  console.log('Got callback from Java');
+  console.log('a: ' + a);
+  console.log('b: ' + b);
+  return a+b;
 });
 
 console.log('END OF TEST');
