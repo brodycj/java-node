@@ -1,4 +1,4 @@
-public class JNode {
+public class JNodeNative {
   public static native void start(String[] args);
 
   public static native int fciArgCount(long fciHandle);

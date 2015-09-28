@@ -24,7 +24,6 @@ Status:
 
 TODO:
 - Automatic testing
-- ~~Improve JS API to first get wrapped function call object based on Java class and method name~~
 - Load JNI library in the library class
 - String, Array, and simple Object parameters and return value JS --> Java
 - JS --> Java with function return value
@@ -60,9 +59,9 @@ To start Node.js library from Java:
 ```Java
 public class MyJavaNodeProgram {
   public static void main(String[] args) {
-    System.loadLibrary("JNode");
+    System.loadLibrary("JNodeNative");
 
-    JNode.start(args);
+    JNodeNative.start(args);
   }
 }
 ```
@@ -73,8 +72,10 @@ and run from command line:
 java MyJavaNodeProgram node -e "console.log('asfd')"
 ```
 
-NOTE: the sample program above needs an extra argument to specify the Node program name.
-This issue is now solved in `JNodeTest.java`.
+~~NOTE: the sample program above needs an extra argument to specify the Node program name.
+This issue is now solved in `JNodeTest.java`.~~
+
+XXX TBD: `JNodeNative.start()` will be reverted to `JNode.start()` very soon.
 
 ### Javascript call to static Java function
 
@@ -98,25 +99,25 @@ public class JNodeTestCB {
   public static void testMethod(long fciHandle) {
     System.out.println("Java testMethod() called");
 
-    int argCount = JNode.fciArgCount(fciHandle);
+    int argCount = JNodeNative.fciArgCount(fciHandle);
     System.out.println("arg count: " + argCount);
     if (argCount < 2) {
       System.err.println("ERROR: not enough arguments");
       return;
     }
-    if (!JNode.fciArgIsNumber(fciHandle, 0) ||
-        !JNode.fciArgIsNumber(fciHandle, 1)) {
+    if (!JNodeNative.fciArgIsNumber(fciHandle, 0) ||
+        !JNodeNative.fciArgIsNumber(fciHandle, 1)) {
       System.err.println("ERROR: incorrect arguments, number arguments expected");
       return;
     }
 
-    double a = JNode.fciArgNumberValue(fciHandle, 0);
+    double a = JNodeNative.fciArgNumberValue(fciHandle, 0);
     System.out.println("number argument a: " + a);
-    double b = JNode.fciArgNumberValue(fciHandle, 1);
+    double b = JNodeNative.fciArgNumberValue(fciHandle, 1);
     System.out.println("number argument b: " + b);
 
     // return the sum:
-    JNode.fciSetReturnNumberValue(fciHandle, a + b);
+    JNodeNative.fciSetReturnNumberValue(fciHandle, a + b);
   }
 }
 ```
@@ -141,8 +142,6 @@ staticTestMethodObjectWithCallback.call(function() {
 });
 ```
 
-~~NOTE: New-style Javascript code needs extra arguments in the function call, will go away.~~
-
 Java:
 
 ```Java
@@ -150,21 +149,21 @@ public class JNodeTestCB {
   public static void testMethodWithCallback(long fciHandle) {
     System.out.println("Java testMethodWithCallback() called");
 
-    int argCount = JNode.fciArgCount(fciHandle);
+    int argCount = JNodeNative.fciArgCount(fciHandle);
     System.out.println("arg count: " + argCount);
     if (argCount < 1) {
       System.err.println("ERROR: not enough arguments");
       return;
     }
 
-    if (!JNode.fciArgIsFunction(fciHandle, 0)) {
+    if (!JNodeNative.fciArgIsFunction(fciHandle, 0)) {
       System.err.println("ERROR: incorrect argument, function argument expected");
       return;
     }
 
-    long fph = JNode.fciArgFunctionAsPersistentHandle(fciHandle, 0);
-    JNode.functionHandleCallWithNoArguments(fph);
-    JNode.functionPersistentHandleDestroy(fph);
+    long fph = JNodeNative.fciArgFunctionAsPersistentHandle(fciHandle, 0);
+    JNodeNative.functionHandleCallWithNoArguments(fph);
+    JNodeNative.functionPersistentHandleDestroy(fph);
   }
 }
 ```
@@ -181,16 +180,16 @@ make
 cd ..
 ```
 
-Build JNode.class:
+Build JNodeNative.class:
 
 ```shell
-javac JNode.java
+javac JNodeNative.java
 ```
 
 Build JNI library:
 
 ```shell
-c++ -all_load -dynamiclib -std=c++11 -stdlib=libstdc++ -olibJNode.jnilib JNode.cc -I/System/Library/Frameworks/JavaVM.framework/Headers -Inode-v4.0.0/src -Inode-v4.0.0/deps/v8/include -framework JavaVM node-v4.0.0/out/Release/libnode.a node-v4.0.0/out/Release/libuv.a node-v4.0.0/out/Release/libv8_base.a node-v4.0.0/out/Release/libv8_nosnapshot.a node-v4.0.0/out/Release/libv8_libbase.a node-v4.0.0/out/Release/libv8_libplatform.a node-v4.0.0/out/Release/libcares.a node-v4.0.0/out/Release/libzlib.a node-v4.0.0/out/Release/libhttp_parser.a node-v4.0.0/out/Release/libopenssl.a
+c++ -all_load -dynamiclib -std=c++11 -stdlib=libstdc++ -olibJNode.jnilib JNodeNative.cc -I/System/Library/Frameworks/JavaVM.framework/Headers -Inode-v4.0.0/src -Inode-v4.0.0/deps/v8/include -framework JavaVM node-v4.0.0/out/Release/libnode.a node-v4.0.0/out/Release/libuv.a node-v4.0.0/out/Release/libv8_base.a node-v4.0.0/out/Release/libv8_nosnapshot.a node-v4.0.0/out/Release/libv8_libbase.a node-v4.0.0/out/Release/libv8_libplatform.a node-v4.0.0/out/Release/libcares.a node-v4.0.0/out/Release/libzlib.a node-v4.0.0/out/Release/libhttp_parser.a node-v4.0.0/out/Release/libopenssl.a
 ```
 
 NOTE: _Some_ credit goes to:
@@ -257,17 +256,16 @@ java JNodeTest jnodecbTest.js
 
 ## To regenerate JNI header
 
-First rebuild JNode.class:
+First rebuild JNodeNative.class:
 
 ```shell
-javac JNode.java
+javac JNodeNative.java
 ```
 
-Then regenerate JNode.h:
+Then regenerate JNodeNative.h:
 
 ```shell
-javah JNode
+javah JNodeNative
 ```
 
-`JNode.h` should now be regenerated.
-
+`JNodeNative.h` should now be regenerated.

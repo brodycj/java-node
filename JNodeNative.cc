@@ -1,4 +1,4 @@
-#include "JNode.h"
+#include "JNodeNative.h"
 #include "node.h"
 
 #include <string>
@@ -20,11 +20,11 @@ struct PersistentFunctionStruct {
 };
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    start
  * Signature: ([Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_JNode_start
+JNIEXPORT void JNICALL Java_JNodeNative_start
   (JNIEnv * e, jclass, jobjectArray a)
 {
   std::string s;
@@ -54,11 +54,11 @@ JNIEXPORT void JNICALL Java_JNode_start
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciArgCount
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_JNode_fciArgCount
+JNIEXPORT jint JNICALL Java_JNodeNative_fciArgCount
   (JNIEnv *, jclass, jlong fciHandle)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -67,11 +67,11 @@ JNIEXPORT jint JNICALL Java_JNode_fciArgCount
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciArgIsNumber
  * Signature: (JI)Z
  */
-JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
+JNIEXPORT jboolean JNICALL Java_JNodeNative_fciArgIsNumber
   (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -80,11 +80,11 @@ JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsNumber
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciArgIsFunction
  * Signature: (JI)Z
  */
-JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsFunction
+JNIEXPORT jboolean JNICALL Java_JNodeNative_fciArgIsFunction
   (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -93,11 +93,11 @@ JNIEXPORT jboolean JNICALL Java_JNode_fciArgIsFunction
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciArgNumberValue
  * Signature: (JI)D
  */
-JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
+JNIEXPORT jdouble JNICALL Java_JNodeNative_fciArgNumberValue
   (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -106,11 +106,11 @@ JNIEXPORT jdouble JNICALL Java_JNode_fciArgNumberValue
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciArgFunctionAsPersistentHandle
  * Signature: (JI)J
  */
-JNIEXPORT jlong JNICALL Java_JNode_fciArgFunctionAsPersistentHandle
+JNIEXPORT jlong JNICALL Java_JNodeNative_fciArgFunctionAsPersistentHandle
   (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -122,11 +122,11 @@ JNIEXPORT jlong JNICALL Java_JNode_fciArgFunctionAsPersistentHandle
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciArgFunctionCallWithNoArguments
  * Signature: (JI)V
  */
-JNIEXPORT void JNICALL Java_JNode_fciArgFunctionCallWithNoArguments
+JNIEXPORT void JNICALL Java_JNodeNative_fciArgFunctionCallWithNoArguments
   (JNIEnv *, jclass, jlong fciHandle, jint argIndex)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -138,11 +138,11 @@ JNIEXPORT void JNICALL Java_JNode_fciArgFunctionCallWithNoArguments
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    fciSetReturnNumberValue
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_JNode_fciSetReturnNumberValue
+JNIEXPORT void JNICALL Java_JNodeNative_fciSetReturnNumberValue
   (JNIEnv *, jclass, jlong fciHandle, jdouble numberValue)
 {
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
@@ -152,11 +152,11 @@ JNIEXPORT void JNICALL Java_JNode_fciSetReturnNumberValue
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    functionHandleCallWithNoArguments
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_JNode_functionHandleCallWithNoArguments
+JNIEXPORT void JNICALL Java_JNodeNative_functionHandleCallWithNoArguments
   (JNIEnv *, jclass, jlong functionPerisstentHandle)
 {
   PersistentFunctionStruct * pfs = reinterpret_cast<PersistentFunctionStruct *>(
@@ -174,11 +174,11 @@ JNIEXPORT void JNICALL Java_JNode_functionHandleCallWithNoArguments
 }
 
 /*
- * Class:     JNode
+ * Class:     JNodeNative
  * Method:    functionPersistentHandleDestroy
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_JNode_functionPersistentHandleDestroy
+JNIEXPORT void JNICALL Java_JNodeNative_functionPersistentHandleDestroy
   (JNIEnv *, jclass, jlong functionPerisstentHandle)
 {
   PersistentFunctionStruct * pfs = reinterpret_cast<PersistentFunctionStruct *>(

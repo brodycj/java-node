@@ -7,6 +7,6 @@ public class JNodeTest {
     String[] node_args = new String[args.length + 1];
     node_args[0] = new String("node");
     System.arraycopy(args, 0, node_args, 1, args.length);
-    JNode.start(node_args);
+    JNodeNative.start(node_args);
   }
 }
