@@ -24,7 +24,6 @@ Status:
 
 TODO:
 - Automatic testing
-- Load JNI library in the library class
 - String, Array, and simple Object parameters and return value JS --> Java
 - JS --> Java with function return value
 - Callback Java --> Javascript with parameters and return value
@@ -59,9 +58,7 @@ To start Node.js library from Java:
 ```Java
 public class MyJavaNodeProgram {
   public static void main(String[] args) {
-    System.loadLibrary("JNodeNative");
-
-    JNodeNative.start(args);
+    JNode.start(args);
   }
 }
 ```
@@ -71,11 +68,6 @@ and run from command line:
 ```Java
 java MyJavaNodeProgram node -e "console.log('asfd')"
 ```
-
-~~NOTE: the sample program above needs an extra argument to specify the Node program name.
-This issue is now solved in `JNodeTest.java`.~~
-
-XXX TBD: `JNodeNative.start()` will be reverted to `JNode.start()` very soon.
 
 ### Javascript call to static Java function
 
@@ -178,6 +170,12 @@ cd node-v4.0.0
 ./configure --enable-static
 make
 cd ..
+```
+
+Build JNode.class:
+
+```shell
+javac JNode.java
 ```
 
 Build JNodeNative.class:
