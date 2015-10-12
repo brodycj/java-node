@@ -12,7 +12,7 @@
 JNIEnv * jnode_jni_env;
 
 struct PersistentFunctionStruct {
-  PersistentFunctionStruct(v8::Isolate * isolate, v8::Handle<v8::Function> & f) :
+  PersistentFunctionStruct(v8::Isolate * isolate, v8::Local<v8::Function> & f) :
     isolate(isolate), f(isolate, f) { }
 
   v8::Isolate * isolate;
@@ -138,7 +138,7 @@ JNIEXPORT jlong JNICALL Java_JNodeNative_fciArgFunctionAsPersistentHandle
   v8::FunctionCallbackInfo<v8::Value> & fci = *(v8::FunctionCallbackInfo<v8::Value> *)fciHandle;
   v8::Isolate * isolate = fci.GetIsolate();
 
-  v8::Handle<v8::Function> f = v8::Handle<v8::Function>::Cast(fci[argIndex]);
+  v8::Local<v8::Function> f = v8::Local<v8::Function>::Cast(fci[argIndex]);
 
   return reinterpret_cast<long>(new PersistentFunctionStruct(isolate, f));
 }
@@ -197,11 +197,7 @@ JNIEXPORT void JNICALL Java_JNodeNative_fcoVoidCallAndDestroy
     reinterpret_cast<void *>(fcoHandle));
   PersistentFunctionStruct * pfs = fco->pfs;
 
-  // NOTE: discovered by reading:
-  // https://groups.google.com/forum/#!topic/v8-users/6kSAbnUb-rQ
-  // Especially the message at:
-  // https://groups.google.com/d/msg/v8-users/6kSAbnUb-rQ/T2BS0O-LuGAJ
-  v8::Local<v8::Function> f = *reinterpret_cast<v8::Local<v8::Function> *>(&pfs->f);
+  v8::Local<v8::Function> f = v8::Local<v8::Function>::New(pfs->isolate, pfs->f);
 
   std::vector<v8::Local<v8::Value>> av;
   for (std::vector<fco_param>::iterator iter = fco->params.begin();
@@ -230,11 +226,7 @@ JNIEXPORT jint JNICALL Java_JNodeNative_fcoIntCallAndDestroy
     reinterpret_cast<void *>(fcoHandle));
   PersistentFunctionStruct * pfs = fco->pfs;
 
-  // NOTE: discovered by reading:
-  // https://groups.google.com/forum/#!topic/v8-users/6kSAbnUb-rQ
-  // Especially the message at:
-  // https://groups.google.com/d/msg/v8-users/6kSAbnUb-rQ/T2BS0O-LuGAJ
-  v8::Local<v8::Function> f = *reinterpret_cast<v8::Local<v8::Function> *>(&pfs->f);
+  v8::Local<v8::Function> f = v8::Local<v8::Function>::New(pfs->isolate, pfs->f);
 
   std::vector<v8::Local<v8::Value>> av;
   for (std::vector<fco_param>::iterator iter = fco->params.begin();
@@ -246,7 +238,7 @@ JNIEXPORT jint JNICALL Java_JNodeNative_fcoIntCallAndDestroy
   }
 
   // trick from: http://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array-c
-  v8::Handle<v8::Value> rv = f->Call(v8::Null(pfs->isolate), av.size(), &av[0]);
+  v8::Local<v8::Value> rv = f->Call(v8::Null(pfs->isolate), av.size(), &av[0]);
 
   delete fco;
 
