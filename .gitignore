@@ -2,4 +2,4 @@
 *.class
 *.jnilib
 build
-node-v4.0.0
+node-v4.?.?
