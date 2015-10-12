@@ -26,12 +26,12 @@ Status:
 - Java --> JS callback now working with support for _integer_ parameters and return value
 
 TODO:
-- Automatic testing
+- Automate build
+- build and test on Linux
 - String, array, "double-precision" (32-bit floating point), and simple Object parameters and return value JS <--> Java
 - JS --> Java with function return value
 - JNI efficiency ref: http://www.ibm.com/developerworks/library/j-jni/
 - Support build on Linux
-- automated build
 - Use proper Java package IDs
 - Java API to get function call parameters using a real object instead of a long (64-bit) pointer handle
 
@@ -213,7 +213,7 @@ should generate: `build/Release/JNodeCB.node`
 
 ## Testing
 
-### Java-driven startup test
+### Simple Java-driven startup test
 
 Build Java-driven startup test program:
 
@@ -251,18 +251,19 @@ staticTestMethodObjectWithCallback.call(function(a, b) {
 console.log('END OF TEST');
 ```
 
+### Build and run Javascript/Java callback tests
+
 Build Java callback test:
 
 ```shell
 javac JNodeTestCB.java
 ```
 
-To run Java callback test:
+To run Java callback test, with automatic result checking:
 
 ```shell
 java JNodeTest jnodecbTest.js
 ```
-
 
 ## To regenerate JNI header
 
