@@ -26,6 +26,7 @@ Status:
 - Java --> JS callback now working with support for _integer_ parameters and return value
 
 TODO:
+- smart handling of multiple versions of Node.js
 - build and test on Linux
 - String, array, "double-precision" (32-bit floating point), and simple Object parameters and return value JS <--> Java
 - JS --> Java with function return value
@@ -50,7 +51,7 @@ External requirements:
 - `node-gyp`
 
 Externally fetched:
-- Node.js (4.1.2) source
+- Node.js source (`4.2.3`)
 
 ## Usage
 
@@ -176,7 +177,7 @@ public class JNodeTestCB {
 make
 ```
 
-NOTE: This will fetch and extract Node `4.1.2` source code if necesssary.
+NOTE: This will fetch and extract Node (`4.2.3`) source code if necessary.
 
 ## Testing
 

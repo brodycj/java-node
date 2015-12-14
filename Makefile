@@ -3,10 +3,10 @@
 # - https://github.com/nodejs/node-v0.x-archive/issues/7310#issuecomment-40280294 for suggestion to use the `-all_load` flag which was needed to get this working on OSX
 # - https://github.com/jxcore/jxcore/blob/master/doc/native/Embedding_Basics.md for identification of _which_ v8 libraries to include
 
-NODE_VERSION = 4.1.2
+NODE_VERSION = 4.2.3
 
 NODE_LIB = node-v$(NODE_VERSION)/out/Release/libnode.a
-NODE_DIST = https://nodejs.org/dist/v4.1.2/node-v$(NODE_VERSION).tar.gz
+NODE_DIST = https://nodejs.org/dist/v$(NODE_VERSION)/node-v$(NODE_VERSION).tar.gz
 NODE_DIR = node-v$(NODE_VERSION)
 NODE_CONFIGURE = $(NODE_DIR)/configure
 
@@ -15,10 +15,10 @@ NODECB_ADDON = build/Release/JNodeCB.node
 all: $(NODECB_ADDON) JNodeTestCB.class JNodeTest.class JNodeNative.class libJNode.jnilib
 
 clean:
-	rm -f libJNode.jnilib *.class
+	rm -fr libJNode.jnilib *.class build
 
 distclean:
-	rm -f libJNode.jnilib *.class $(NODE_DIR)
+	rm -fr libJNode.jnilib *.class build node-v*
 
 test: all
 	java JNodeTest jnodecbTest.js
