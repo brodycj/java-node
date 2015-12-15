@@ -1,6 +1,30 @@
 public class JNodeTestCB {
-  public static void testMethod(long fciHandle) {
-    //System.out.println("Java testMethod() called");
+  public static void stringTestMethod(long fciHandle) {
+    //System.out.println("Java stringTestMethod() called");
+
+    int argCount = JNodeNative.fciArgCount(fciHandle);
+    //System.out.println("arg count: " + argCount);
+    if (argCount < 2) {
+      System.err.println("ERROR: not enough arguments");
+      return;
+    }
+    if (!JNodeNative.fciArgIsString(fciHandle, 0) ||
+        !JNodeNative.fciArgIsString(fciHandle, 1)) {
+      System.err.println("ERROR: incorrect arguments, string arguments expected");
+      return;
+    }
+
+    String a = JNodeNative.fciArgStringValue(fciHandle, 0);
+    //System.out.println("argument a: " + a);
+    String b = JNodeNative.fciArgStringValue(fciHandle, 1);
+    //System.out.println("argument b: " + b);
+
+    // return a concatenation:
+    JNodeNative.fciSetReturnStringValue(fciHandle, a + "," + b);
+  }
+
+  public static void numberTestMethod(long fciHandle) {
+    //System.out.println("Java numberTestMethod() called");
 
     int argCount = JNodeNative.fciArgCount(fciHandle);
     //System.out.println("arg count: " + argCount);
@@ -40,10 +64,13 @@ public class JNodeTestCB {
 
     long fph = JNodeNative.fciArgFunctionAsPersistentHandle(fciHandle, 0);
     long fco = JNodeNative.fcoFromHandle(fph);
-    JNodeNative.fcoAddIntegerParameter(fco, 123);
-    JNodeNative.fcoAddIntegerParameter(fco, 456);
-    int r = JNodeNative.fcoIntCallAndDestroy(fco);
+    JNodeNative.fcoAddDoubleParameter(fco, 123.456);
+    JNodeNative.fcoAddStringParameter(fco, "abc");
+    JNodeNative.fcoAddIntegerParameter(fco, 789);
+    // TODO: support & test JNodeNative.fcoDoubleCallAndDestroy()
+    JNodeNative.fcoVoidCallAndDestroy(fco);
     JNodeNative.functionPersistentHandleDestroy(fph);
-    System.out.println("Got result back from JS callback: " + r);
   }
+
+  // XXX TODO two-way Javascript-Java callback test
 }

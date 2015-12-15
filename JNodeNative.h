@@ -25,6 +25,14 @@ JNIEXPORT jint JNICALL Java_JNodeNative_fciArgCount
 
 /*
  * Class:     JNodeNative
+ * Method:    fciArgIsString
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JNodeNative_fciArgIsString
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNodeNative
  * Method:    fciArgIsNumber
  * Signature: (JI)Z
  */
@@ -37,6 +45,14 @@ JNIEXPORT jboolean JNICALL Java_JNodeNative_fciArgIsNumber
  * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL Java_JNodeNative_fciArgIsFunction
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     JNodeNative
+ * Method:    fciArgStringValue
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_JNodeNative_fciArgStringValue
   (JNIEnv *, jclass, jlong, jint);
 
 /*
@@ -57,6 +73,14 @@ JNIEXPORT jlong JNICALL Java_JNodeNative_fciArgFunctionAsPersistentHandle
 
 /*
  * Class:     JNodeNative
+ * Method:    fciSetReturnStringValue
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fciSetReturnStringValue
+  (JNIEnv *, jclass, jlong, jstring);
+
+/*
+ * Class:     JNodeNative
  * Method:    fciSetReturnNumberValue
  * Signature: (JD)V
  */
@@ -70,6 +94,22 @@ JNIEXPORT void JNICALL Java_JNodeNative_fciSetReturnNumberValue
  */
 JNIEXPORT jlong JNICALL Java_JNodeNative_fcoFromHandle
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoAddStringParameter
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fcoAddStringParameter
+  (JNIEnv *, jclass, jlong, jstring);
+
+/*
+ * Class:     JNodeNative
+ * Method:    fcoAddDoubleParameter
+ * Signature: (JD)V
+ */
+JNIEXPORT void JNICALL Java_JNodeNative_fcoAddDoubleParameter
+  (JNIEnv *, jclass, jlong, jdouble);
 
 /*
  * Class:     JNodeNative
